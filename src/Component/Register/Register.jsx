@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import {createUserWithEmailAndPassword, getAuth, sendEmailVerification} from 'firebase/auth'
+import {createUserWithEmailAndPassword, getAuth, sendEmailVerification, updateProfile} from 'firebase/auth'
 import app from '../../Firebase/firebase-config';
 import { Link } from 'react-router-dom';
 const auth = getAuth(app)
@@ -15,7 +15,8 @@ const Register = () => {
         setError('')
         const email = event.target.email.value
         const password = event.target.password.value
-
+        const name = event.target.name.value
+        console.log(name)
         //*  Strong Password Validation  *//
 
         if (!/(?=.*[A-Z])/.test(password)) {
@@ -40,12 +41,24 @@ const Register = () => {
             event.target.reset()
             console.log(createdUser);
             emailVerification(createdUser)
+            updateName(result.user, name)
             setSuccess('User has been Created Successfully')
             })
             .catch(error => {
                 console.log(error)
                 setError(error.message)
         })
+    }
+    const updateName = (user, name) => {
+        updateProfile(user, {
+        displayName:  name 
+    })
+        .then(() => {
+        console.log( 'name updated')
+        })
+        .catch(error => {
+        setError(error.message)
+    })
     }
     const emailVerification = user => {
         sendEmailVerification(user)
